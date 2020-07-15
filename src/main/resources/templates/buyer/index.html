@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Buyer's Home Page</title>
+<link
+	href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600'
+	rel='stylesheet' type='text/css' />
+<link
+	href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300'
+	rel='stylesheet' type='text/css' />
+<link href='http://fonts.googleapis.com/css?family=Raleway:400,100'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" />
+<link rel="stylesheet" th:href="@{/css/owl.carousel.css}" />
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+<link rel="stylesheet" th:href="@{/css/responsive.css}" />
+
+<script src="https://code.jquery.com/jquery.min.js"></script>
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+<!-- Navbar -->
+
+	<div class="mainmenu-area">
+		<div class="container">
+			<div class="row">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target=".navbar-collapse">
+						<span class="sr-only">Toggle</span> <span class="icon-bar"></span>
+						<span class="icon-bar"></span> <span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><img th:src="@{/img/mylogo.png}"></li>
+						<li><a th:href="@{/buyer/home}">Home</a></li>
+						<li><a th:href="@{/buyer/getCart}">Cart</a></li>
+						<li><a th:href="@{/buyer/checkout}">Checkout</a></li>
+						<li><a href="#">Contact</a></li>
+						<li><a th:href="@{/logout}">Sign Out</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- Search form -->
+	<div class="container">
+		<div class="col-md-8 col-md-offset-3">
+			<div class="row">
+				<form role="form" id="form-buscar" th:action="@{/buyer/home}" method="get">
+					
+					
+					<input type="radio" id="lowToHigh" name="filter" value="lowToHigh">
+  					<label for="lowToHigh">LOW TO HIGH</label>
+  					
+					<input type="radio" id="highToLow" name="filter" value="highToLow">
+					<label for="highToLow">HIGH TO LOW</label>
+					
+					<input type="radio" id="newestArrivals" name="filter" value="newestArrivals">
+					<label for="newestArrivals">NEWEST ARRIVALS</label> 
+					
+
+					<div class="form-group">
+						<div class="input-group">
+							<input id="1" class="form-control" type="text" name="search"
+								placeholder="Search..." required /> <span
+								class="input-group-btn">
+								<button class="btn btn-success" type="submit">
+									<i class="glyphicon glyphicon-search" aria-hidden="true"></i>
+									Search
+								</button>
+							</span>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<!-- MAIN BODY-->
+	
+	<div class="single-product-area">
+		<div class="zigzag-bottom"></div>
+		<div class="container">
+			<div class="row">
+				<th:block th:each="product : ${page.content}">
+					<div class="col-md-3 col-sm-6">
+						<div class="single-shop-product">
+							<div class="product-upper">
+								<img class="fixed-height" th:src="'data:image/jpeg;base64,' + ${imgUtil.getImgData(product.pic)}" alt="">
+							</div>
+							<h2>
+								<a th:href="@{'/buyer/getProductDetails/'+${product.id}}" th:text="${product.name}">Apple new mac book 2015 March</a>
+							</h2>
+							<div class="product-carousel-price">
+								<ins th:text="${product.price}">INR 89.00</ins>
+								<del>INR 99.00</del>
+							</div>
+
+							<div class="product-option-shop">
+								<a class="add_to_cart_button" data-product_sku="" data-product_id="70" rel="nofollow"
+									th:href="@{'/buyer/getProductDetails/' + ${product.id}}">View Details</a>
+							</div>
+						</div>
+					</div>
+				</th:block>
+			</div>
+			<div th:if="${search == null}" class="product-pagination text-center">
+				<h5>Pages</h5>
+				<span th:if="${page.hasPrevious()}"> <a
+					th:href="@{/buyer/home(page=${page.number-1},size=${page.size})}">Previous</a>
+				</span>
+				<th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">
+					<span th:if="${page.number == i}" class="selected">[[${i}+1]]</span>
+					<span th:unless="${page.number == i}"> <a
+						th:href="@{/buyer/home(page=${i},size=${page.size})}">[[${i}+1]]</a>
+					</span>
+				</th:block>
+				<span th:if="${page.hasNext()}"> <a
+					th:href="@{/buyer/home(page=${page.number+1},size=${page.size})}">Next</a>
+				</span>
+			</div>
+			
+			
+			<div th:if="${search !=null && lowToHigh !=null}" class="product-pagination text-center">
+				<h5>Pages</h5>
+				<span th:if="${page.hasPrevious()}"> <a
+					th:href="@{/buyer/home(page=${page.number-1},size=${page.size}, search = ${search}, filter = 'lowToHigh')}">Previous</a>
+				</span>
+				<th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">
+					<span th:if="${page.number == i}" class="selected">[[${i}+1]]</span>
+					<span th:unless="${page.number == i}"> <a
+						th:href="@{/buyer/home(page=${i},size=${page.size},search = ${search}, filter = 'lowToHigh')}">[[${i}+1]]</a>
+					</span>
+				</th:block>
+				<span th:if="${page.hasNext()}"> <a
+					th:href="@{/buyer/home(page=${page.number+1},size=${page.size}, search = ${search}, filter = 'lowToHigh')}">Next</a>
+				</span>
+			</div>
+			
+			<div th:if="${search !=null && highToLow !=null}" class="product-pagination text-center">
+				<h5>Pages</h5>
+				<span th:if="${page.hasPrevious()}"> <a
+					th:href="@{/buyer/home(page=${page.number-1},size=${page.size}, search = ${search}, filter = 'highToLow')}">Previous</a>
+				</span>
+				<th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">
+					<span th:if="${page.number == i}" class="selected">[[${i}+1]]</span>
+					<span th:unless="${page.number == i}"> <a
+						th:href="@{/buyer/home(page=${i},size=${page.size},search = ${search}, filter = 'highToLow')}">[[${i}+1]]</a>
+					</span>
+				</th:block>
+				<span th:if="${page.hasNext()}"> <a
+					th:href="@{/buyer/home(page=${page.number+1},size=${page.size}, search = ${search}, filter = 'highToLow')}">Next</a>
+				</span>
+			</div>
+			
+			<div th:if="${search !=null && newestArrivals !=null}" class="product-pagination text-center">
+				<h5>Pages</h5>
+				<span th:if="${page.hasPrevious()}"> <a
+					th:href="@{/buyer/home(page=${page.number-1},size=${page.size}, search = ${search}, filter = 'newestArrivals')}">Previous</a>
+				</span>
+				<th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">
+					<span th:if="${page.number == i}" class="selected">[[${i}+1]]</span>
+					<span th:unless="${page.number == i}"> <a
+						th:href="@{/buyer/home(page=${i},size=${page.size},search = ${search}, filter = 'newestArrivals')}">[[${i}+1]]</a>
+					</span>
+				</th:block>
+				<span th:if="${page.hasNext()}"> <a
+					th:href="@{/buyer/home(page=${page.number+1},size=${page.size}, search = ${search}, filter = 'newestArrivals')}">Next</a>
+				</span>
+			</div>
+			
+			
+		</div>
+	</div>
+	
+	<!-- END OF MAIN BODY -->
+
+	<!-- Footer  -->
+
+	<div class="footer-top-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-about-us">
+						<h2>
+							Navdeep's<span> E-mart</span>
+						</h2>
+						<p>This is your Store and only place to Lorem ipsum dolor sit
+							amet, consectetur adipisicing elit. Voluptatem molestias
+							repudiandae, ut voluptate quas placeat accusamus! Vitae
+							repudiandae a quos placeat excepturi incidunt aspernatur, ducimus
+							quisquam consequuntur, accusamus ad laudantium!</p>
+						<div class="footer-social">
+							<a href="#" target="_blank"><i class="fa fa-facebook"></i></a> <a
+								href="#" target="_blank"><i class="fa fa-twitter"></i></a> <a
+								href="#" target="_blank"><i class="fa fa-linkedin"></i></a>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-menu">
+						<h2 class="footer-wid-title">User Navigation</h2>
+						<ul>
+							<li><a href="#">My account</a></li>
+							<li><a href="#">Order history</a></li>
+							<li><a href="#">Wishlist</a></li>
+							<li><a href="#">Vendor contact</a></li>
+							<li><a href="#">Home page</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-menu">
+						<h2 class="footer-wid-title">Categories</h2>
+						<ul>
+							<li><a href="#">Mobile Phone</a></li>
+							<li><a href="#">Home accesseries</a></li>
+							<li><a href="#">LED TV</a></li>
+							<li><a href="#">Computer</a></li>
+							<li><a href="#">Gadets</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-newsletter">
+						<h2 class="footer-wid-title">Newsletter</h2>
+						<p>Sign up to our newsletter and get exclusive deals and
+							prices straight to your inbox!</p>
+						<div class="newsletter-form">
+							<form action="#">
+								<input type="email" placeholder="Type your email"> <input
+									type="submit" value="Subscribe">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{/js/owl.carousel.min.js}"></script>
+	<script th:src="@{/js/jquery.sticky.js}"></script>
+	<script th:src="@{/js/jquery.easing.1.3.min.js}"></script>
+	<script th:src="@{/js/main.js}"></script>
+	<script th:src="@{/js/radioButtonHandler.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bxslider.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/script.slider.js}"></script>
+</body>
+
+</html>

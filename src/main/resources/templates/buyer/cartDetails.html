@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Buyer's Home Page</title>
+<link
+	href='http://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600'
+	rel='stylesheet' type='text/css' />
+<link
+	href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300'
+	rel='stylesheet' type='text/css' />
+<link href='http://fonts.googleapis.com/css?family=Raleway:400,100'
+	rel='stylesheet' type='text/css' />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/font-awesome.min.css}" />
+<link rel="stylesheet" th:href="@{/css/owl.carousel.css}" />
+<link rel="stylesheet" th:href="@{/css/style.css}" />
+<link rel="stylesheet" th:href="@{/css/responsive.css}" />
+
+<script src="https://code.jquery.com/jquery.min.js"></script>
+<script
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+
+<script th:inline="javascript">
+function kontakte(productId){
+			var quantity = $('#product'+productId).val();
+			var request = $.ajax({
+					url : '/buyer/getCart/details',
+					type : 'GET',
+					data : {
+						quantity : quantity,
+						productId : productId
+					}
+				});
+			request.done(function(data) {
+				alert("Quantity Updated");
+				location.reload(true);
+			});
+
+			request.fail(function(jqXHR, textStatus) {
+			});
+}
+</script>
+
+
+
+
+</head>
+
+<body>
+
+
+	<div th:if="${noProducts}">
+		<div class="alert alert-info"><h1>Product Does not Exists</h1></div>
+		<div class="text-center"><a th:href="@{/buyer/home}" class="btn btn-primary"><i
+							class="fa fa-angle-left"></i> Continue Shopping</a></div>
+	</div>
+	
+	<div th:if="${outOfStock}">
+		<div class="alert alert-info"><h1>Product Does not Exists</h1></div>
+		<div class="text-center"><h2 th:text="${outOfStock}"></h2></div>
+	</div>
+	
+	<div th:if="${noProducts == null}">
+	<!-- Navbar -->
+	
+	<div class="mainmenu-area">
+		<div class="container">
+			<div class="row">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target=".navbar-collapse">
+						<span class="sr-only">Toggle</span> <span class="icon-bar"></span>
+						<span class="icon-bar"></span> <span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+						<li><img th:src="@{/img/mylogo.png}"></li>
+						<li><a th:href="@{/buyer/home}">Home</a></li>
+						<li><a th:href="@{/buyer/getCart}">Cart</a></li>
+						<li><a th:href="@{/buyer/checkOut}">Checkout</a></li>
+						<li><a href="#">Contact</a></li>
+						<li><a th:href="@{/logout}">Sign Out</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<br />
+
+	<!-- Search form -->
+
+	<div class="container">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="row">
+				<div id="logo" class="text-center">
+					<h4>Filters</h4>
+				</div>
+				<form role="form" id="form-buscar" th:action="@{/buyer/home}"
+					method="get">
+
+					<input type="radio" id="lowToHigh" name="filter" value="lowToHigh">
+					<label for="lowToHigh">LOW TO HIGH</label> <input type="radio"
+						id="highToLow" name="filter" value="highToLow"> <label
+						for="highToLow">HIGH TO LOW</label> <input type="radio"
+						id="newestArrivals" name="filter" value="newestArrivals">
+					<label for="newestArrivals">NEWEST ARRIVALS</label>
+					<div class="form-group">
+						<div class="input-group">
+							<input id="1" class="form-control" type="text" name="search"
+								placeholder="Search..." required /> <span
+								class="input-group-btn">
+								<button class="btn btn-success" type="submit">
+									<i class="glyphicon glyphicon-search" aria-hidden="true"></i>
+									Search
+								</button>
+							</span>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<br/>
+	<br/>
+	
+	<!-- CART DETAILS -->
+	<div class="container">
+		<table id="cart" class="table table-hover table-condensed">
+			<thead>
+				<tr>
+					<th style="width: 50%">Product</th>
+					<th style="width: 10%">Price</th>
+					<th style="width: 8%">Quantity</th>
+					<th style="width: 22%" class="text-center">Subtotal</th>
+					<th style="width: 10%"></th>
+				</tr>
+			</thead>
+			<th:block th:each="orderProduct : ${orderProducts}">
+				<input th:value="${orderProduct.product.id}" type="hidden" id="productId"></input>
+				<tbody>
+					<tr>
+						<td data-th="Product">
+							<div class="row">
+								<div class="col-sm-2 hidden-xs">
+									<img style="height: 100px;width:100px" th:src="'data:image/jpeg;base64,' + ${imgUtil.getImgData(orderProduct.product.pic)}"
+										alt="Image not available :-(" class="img-responsive" />
+								</div>
+								<div class="col-sm-10">
+									<h4 th:text="${orderProduct.product.name}" class="nomargin">Product Name</h4>
+									<p th:text="${orderProduct.product.description}">Product Description</p>
+								</div>
+							</div>
+						</td>
+						<td th:text="${orderProduct.product.price}" data-th="Price">Product price</td>
+						<td data-th="Quantity">
+								<div class="quantity">
+									<input th:id="'product'+${orderProduct.product.id}" type="number" size="4" class="input-text qty text"
+										title="Qty" th:value="${orderProduct.quantity}" name="myInput"
+										min="1" step="1">
+								</div>
+						</td>
+						<td th:text="${orderProduct.totalPrice}" data-th="Subtotal" class="text-center">1.99</td>
+						<td class="actions" data-th="">
+							<button class="btn btn-info btn-sm" th:onclick="|kontakte('${orderProduct.product.id}')|">
+								<i class="fa fa-refresh"></i>
+							</button>
+							<a th:href="@{/buyer/deleteItem( productId = ${orderProduct.product.id})}"><button class="btn btn-danger btn-sm">
+								<i class="fa fa-trash-o"></i>
+							</button></a>
+						</td>
+					</tr>
+				</tbody>
+			</th:block>
+			<tfoot>
+				<tr class="visible-xs">
+					<td class="text-center"><strong></strong></td>
+				</tr>
+				<tr>
+					<td><a th:href="@{/buyer/home}" class="btn btn-primary"><i
+							class="fa fa-angle-left"></i> Continue Shopping</a></td>
+					<td colspan="2" class="hidden-xs"></td>
+					<td th:text="'Total INR '+${totalPrice}" class="hidden-xs text-center"><strong>Total 1.99</strong></td>
+					<td><a th:href="@{/buyer/checkOut}" class="btn btn-success btn-block">Checkout
+							<i class="fa fa-angle-right"></i>
+					</a></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<!-- Footer  -->
+
+	<div class="footer-top-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-about-us">
+						<h2>
+							Navdeep's<span> E-mart</span>
+						</h2>
+						<p>This is your Store and only place to Lorem ipsum dolor sit
+							amet, consectetur adipisicing elit. Voluptatem molestias
+							repudiandae, ut voluptate quas placeat accusamus! Vitae
+							repudiandae a quos placeat excepturi incidunt aspernatur, ducimus
+							quisquam consequuntur, accusamus ad laudantium!</p>
+						<div class="footer-social">
+							<a href="#" target="_blank"><i class="fa fa-facebook"></i></a> <a
+								href="#" target="_blank"><i class="fa fa-twitter"></i></a> <a
+								href="#" target="_blank"><i class="fa fa-linkedin"></i></a>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-menu">
+						<h2 class="footer-wid-title">User Navigation</h2>
+						<ul>
+							<li><a href="#">My account</a></li>
+							<li><a href="#">Order history</a></li>
+							<li><a href="#">Wishlist</a></li>
+							<li><a href="#">Vendor contact</a></li>
+							<li><a href="#">Home page</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-menu">
+						<h2 class="footer-wid-title">Categories</h2>
+						<ul>
+							<li><a href="#">Mobile Phone</a></li>
+							<li><a href="#">Home accesseries</a></li>
+							<li><a href="#">LED TV</a></li>
+							<li><a href="#">Computer</a></li>
+							<li><a href="#">Gadets</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6">
+					<div class="footer-newsletter">
+						<h2 class="footer-wid-title">Newsletter</h2>
+						<p>Sign up to our newsletter and get exclusive deals and
+							prices straight to your inbox!</p>
+						<div class="newsletter-form">
+							<form action="#">
+								<input type="email" placeholder="Type your email"> <input
+									type="submit" value="Subscribe">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<script th:src="@{/js/owl.carousel.min.js}"></script>
+	<script th:src="@{/js/jquery.sticky.js}"></script>
+	<script th:src="@{/js/jquery.easing.1.3.min.js}"></script>
+	<script th:src="@{/js/main.js}"></script>
+	<script th:src="@{/js/radioButtonHandler.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bxslider.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/script.slider.js}"></script>
+</body>
+</html>
